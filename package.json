@@ -1,0 +1,13 @@
+{
+  "name": "zeker",
+  "version": "1.0.0",
+  "description": "asset builder for eSpeakers front end projects",
+  "private": true,
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@esp-svn:~/repos/zeker.git"
+  },
+  "author": "espeakers",
+  "license": "eSpeakers"
+}
