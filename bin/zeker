@@ -19,10 +19,8 @@ var zeker = package_json.zeker;
 
 var args = process.argv.slice(2);
 
-if(args[0] === 'watch'){
-	require('../watch')(zeker, _.rest(args));
-}else if(args[0] === 'production'){
-	require('../production')(zeker, _.rest(args));
+if(_.contains(['watch', 'production'], args[0])){
+	require('../index')(zeker, args[0], _.rest(args));
 }else{
 	console.log('USAGE:');
 	console.log('   zeker watch [build-names...]');
