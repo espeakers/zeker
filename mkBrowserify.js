@@ -2,6 +2,7 @@ var path = require("path");
 var envify = require("envify/custom");
 var babelify = require("babelify");
 var browserify = require("browserify");
+var bundleCollapser = require("bundle-collapser/plugin");
 
 module.exports = function(zeker, build_name, is_prod){
 	var b = browserify({
@@ -31,5 +32,8 @@ module.exports = function(zeker, build_name, is_prod){
 			"es6.properties.shorthand"
 		]
 	}));
+	if(is_prod){
+		b.plugin(bundleCollapser);
+	}
 	return b;
 };
