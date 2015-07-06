@@ -9,5 +9,9 @@
     "url": "git@esp-svn:~/repos/zeker.git"
   },
   "author": "espeakers",
-  "license": "eSpeakers"
+  "license": "eSpeakers",
+  "dependencies": {
+    "browserify": "^10.2.4",
+    "watchify": "^3.2.3"
+  }
 }
