@@ -15,14 +15,17 @@ module.exports = function(l, done){
 		code = _.parseInt(code ? (code.code || code) : code, 10);
 		if(code !== 0){
 			l.err("test failed");
+			done("test failed");
+		}else{
+			done();
 		}
 	});
 
 	p.stdout.on("data", function(data){
-		_.each(toLines(data), l.log);
+		_.each(toLines(data), _.ary(l.log, 1));
 	});
 	p.stderr.on("data", function(data){
-		_.each(toLines(data), l.err);
+		_.each(toLines(data), _.ary(l.err, 1));
 	});
 
 	return p;

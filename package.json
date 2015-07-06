@@ -17,6 +17,7 @@
     "babelify": "^6.1.2",
     "browserify": "^10.2.4",
     "chalk": "^1.1.0",
+    "chokidar": "^1.0.3",
     "cross-spawn": "^1.0.3",
     "envify": "^3.4.0",
     "lodash": "^3.10.0",
