@@ -1,6 +1,8 @@
 var _ = require('lodash');
 var path = require('path');
+var task = require('./task');
 var mkMyLog = require('./mkMyLog');
+var buildCSS = require('./buildCSS');
 var chokidar = require('chokidar');
 var runTests = require('./runTests');
 var watchify = require('watchify');
@@ -8,8 +10,12 @@ var mkBrowserify = require('./mkBrowserify');
 var mkOutputStream = require('./mkOutputStream');
 
 module.exports = function(zeker, build_names){
-	var js_builds = _.intersection(_.keys(zeker.js), build_names);
-	js_builds = js_builds.length === 0 ? _.keys(zeker.js) : js_builds;
+	var js_builds = _.filter(build_names, function(n){
+		return _.has(zeker.js, n);
+	});
+	var css_builds = _.filter(build_names, function(n){
+		return _.has(zeker.css, n);
+	});
 
 	//spawn all the watchify tasks
 	_.each(js_builds, function(build_name){
@@ -29,27 +35,27 @@ module.exports = function(zeker, build_names){
 	});
 
 	//tests
-	var testIt = (function(){
-		var l = mkMyLog('tests');
+	var tests_l = mkMyLog('npm test');
+	var testIt = task(function(done){
+		runTests(tests_l, done);
+	});
 
-		//make sure it runs one at a time and re-runs if one is triggered before it finishes
-		var running = false;
-		var queued = false;
-		return _.debounce(function(){
-			if(running){
-				queued = true;//queue it
-				return;
-			}
-			running = true;
-			runTests(l, function(){
-				running = false;
-				if(queued){
-					queued = false;
-					testIt();
+	//css
+	var css_tasks = _.map(css_builds, function(name){
+		var l = mkMyLog(name + '.css');
+		return task(function(done){
+			var start_time = Date.now();
+			buildCSS(zeker, name, false, function(err, n_bytes){
+				done();
+				if(err){
+					l.err(err);
+				}else{
+					var delta = Date.now() - start_time;
+					l.log(n_bytes + ' bytes written (' + (delta / 1000).toFixed(2) + ' seconds)');
 				}
 			});
-		}, 100);
-	}());
+		});
+	});
 
 	chokidar.watch('src/').on('all', function(event, file_path){
 		var type = path.extname(file_path).replace(/[ \.]+/g, '').toLowerCase();
@@ -57,7 +63,7 @@ module.exports = function(zeker, build_names){
 			testIt();
 		}
 		if(type === 'less' || type === 'css'){
-			//TODO build css
+			_.each(css_tasks, function(fn){fn();});
 		}
 	});
 };
