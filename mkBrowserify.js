@@ -1,14 +1,35 @@
-var path = require('path');
-var envify = require('envify/custom');
-var browserify = require('browserify');
+var path = require("path");
+var envify = require("envify/custom");
+var babelify = require("babelify");
+var browserify = require("browserify");
 
 module.exports = function(zeker, build_name, is_prod){
 	var b = browserify({
-		entries: [path.join('.', zeker.js[build_name])]
+		entries: [path.join(".", zeker.js[build_name])]
 	});
 	b.transform(envify({
 		ZEKER_BUILD_NAME: build_name,
 		NODE_ENV: is_prod ? "production" : "development"
+	}));
+	b.transform(babelify.configure({
+		whitelist: [
+			//For the list of whats available and what these do go here:
+			//https://babeljs.io/docs/advanced/transformers/
+
+			//browser compatability/bug avoidance
+			"strict",
+			"es3.propertyLiterals",
+			"es3.propertyLiterals",
+			"spec.undefinedToVoid",
+			"validation.undeclaredVariableCheck",
+
+			//the good parts of es6
+			"es6.blockScoping",
+			"es6.destructuring",
+			"es6.parameters",
+			"es6.spread",
+			"es6.properties.shorthand"
+		]
 	}));
 	return b;
 };
