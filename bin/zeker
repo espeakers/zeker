@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+
+var _ = require('lodash');
+
+var error = function(msg){
+	console.error('[error]', msg);
+	process.exit(1);
+};
+
+try{
+	var package_json = require(process.cwd() + '/package.json');
+}catch(e){
+	error('You must be in the same directory as package.json');
+}
+if(!_.has(package_json, 'zeker')){
+	error('Could not find configuration for "zeker" in your package.json');
+}
+var zeker = package_json.zeker;
+
+var args = process.argv.slice(2);
+
+if(args[0] === 'watch'){
+	require('../watch')(zeker, _.rest(args));
+}else if(args[0] === 'production'){
+	require('../production')(zeker, _.rest(args));
+}else{
+	console.log('USAGE:');
+	console.log('   zeker watch [build-names...]');
+	console.log('   zeker production [build-names...]');
+	console.log('');
+	console.log('if build-name is not given, then it will build all of them');
+	process.exit(1);
+}

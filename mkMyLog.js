@@ -49,7 +49,9 @@ module.exports = function(my_name){
 			console.log.apply(console, [prefix()].concat(toArray(arguments)));
 		},
 		err: function(){
-			console.error.apply(console, [prefix()].concat(toArray(arguments)));
+			console.error.apply(console, [prefix()].concat(toArray(arguments).map(function(a){
+				return chalk.red(JSON.stringify(a));
+			})));
 		}
 	};
 };
