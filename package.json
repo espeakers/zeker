@@ -4,6 +4,9 @@
   "description": "asset builder for eSpeakers front end projects",
   "private": true,
   "main": "index.js",
+  "bin": {
+    "zeker": "bin/zeker"
+  },
   "repository": {
     "type": "git",
     "url": "git@esp-svn:~/repos/zeker.git"
