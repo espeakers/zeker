@@ -7,7 +7,9 @@ var bundleCollapser = require("bundle-collapser/plugin");
 module.exports = function(zeker, build_name, is_prod){
 	var b = browserify({
 		entries: [path.join(".", zeker.js[build_name])],
-		debug: true
+		cache: {},//must set for watchify
+		packageCache: {},//must set for watchify
+		debug: true//source maps
 	});
 	b.transform(envify({
 		ZEKER_BUILD_NAME: build_name,
