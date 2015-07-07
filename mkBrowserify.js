@@ -6,7 +6,8 @@ var bundleCollapser = require("bundle-collapser/plugin");
 
 module.exports = function(zeker, build_name, is_prod){
 	var b = browserify({
-		entries: [path.join(".", zeker.js[build_name])]
+		entries: [path.join(".", zeker.js[build_name])],
+		debug: true
 	});
 	b.transform(envify({
 		ZEKER_BUILD_NAME: build_name,
@@ -22,7 +23,6 @@ module.exports = function(zeker, build_name, is_prod){
 			"es3.propertyLiterals",
 			"es3.propertyLiterals",
 			"spec.undefinedToVoid",
-			"validation.undeclaredVariableCheck",
 
 			//the good parts of es6
 			"es6.blockScoping",
