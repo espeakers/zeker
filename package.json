@@ -1,6 +1,6 @@
 {
   "name": "zeker",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "asset builder for eSpeakers front end projects",
   "private": true,
   "main": "index.js",
@@ -28,5 +28,10 @@
     "pad": "^0.1.0",
     "to-array": "^0.1.4",
     "watchify": "^3.2.3"
+  },
+  "scripts": {
+    "prod-patch": "npm version patch && git push && git push --tags",
+    "prod-minor": "npm version minor && git push && git push --tags",
+    "prod-major": "npm version major && git push && git push --tags"
   }
 }
