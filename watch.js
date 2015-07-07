@@ -21,7 +21,9 @@ module.exports = function(zeker, js_builds, css_builds){
 		var bundle = function(){
 			var wb = w.bundle();
 			var out = mkOutputStream(zeker, build_name, 'js', false);
-			wb.on('error', l.err);
+			wb.on('error', function(err){
+				l.err(String(err));
+			});
 			wb.pipe(out);
 		};
 		w.on('update', bundle);

@@ -4,7 +4,7 @@ module.exports = function(fn){
 	//make sure it runs one at a time and re-runs if one is triggered before it finishes
 	var running = false;
 	var queued = false;
-	return _.debounce(function(){
+	var runTask = _.debounce(function(){
 		if(running){
 			queued = true;//queue it
 			return;
@@ -14,8 +14,9 @@ module.exports = function(fn){
 			running = false;
 			if(queued){
 				queued = false;
-				testIt();
+				runTask();
 			}
 		});
 	}, 100);
+	return runTask;
 };
