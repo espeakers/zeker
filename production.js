@@ -1,63 +1,67 @@
-var _ = require('lodash');
-var path = require('path');
-var task = require('./task');
-var mkMyLog = require('./mkMyLog');
-var buildCSS = require('./buildCSS');
-var chokidar = require('chokidar');
-var runTests = require('./runTests');
-var watchify = require('watchify');
-var mkBrowserify = require('./mkBrowserify');
-var mkOutputStream = require('./mkOutputStream');
+var _ = require("lodash");
+var λ = require("contra");
+var path = require("path");
+var task = require("./task");
+var mkMyLog = require("./mkMyLog");
+var buildCSS = require("./buildCSS");
+var chokidar = require("chokidar");
+var runTests = require("./runTests");
+var watchify = require("watchify");
+var mkBrowserify = require("./mkBrowserify");
+var mkOutputStream = require("./mkOutputStream");
+var timeAndNBytesWritten = require("./timeAndNBytesWritten");
+
+var outStreamWrap = function(out, done){
+	var n_bytes = 0;
+	out.on("pipe", function(src){
+		src.on("data", function(data){
+			n_bytes += data.length;
+		});
+	});
+	out.on("close", function(){
+		done(undefined, n_bytes);
+	});
+};
 
 module.exports = function(zeker, js_builds, css_builds){
 
-	//spawn all the watchify tasks
-	_.each(js_builds, function(build_name){
-		var l = mkMyLog(build_name + ".js");
+	var buildJSandCSS = function(onBuilt){
+		λ.concurrent(_.flatten([
 
-		var w = watchify(mkBrowserify(zeker, build_name, false));
-		w.on('log', l.log);
+			/////////////////////////////////////////////
+			//Build JS
+			_.map(js_builds, function(build_name){
+				var l = mkMyLog(build_name + ".min.js");
 
-		var bundle = function(){
-			var wb = w.bundle();
-			var out = mkOutputStream(zeker, build_name, 'js', false);
-			wb.on('error', l.err);
-			wb.pipe(out);
-		};
-		w.on('update', bundle);
-		bundle();
-	});
+				return function(done){
+					var b = mkBrowserify(zeker, build_name, true);
+					var out = mkOutputStream(zeker, build_name, "js", true);
 
-	//tests
-	var tests_l = mkMyLog('npm test');
-	var testIt = task(function(done){
-		runTests(tests_l, done);
-	});
+					outStreamWrap(out, timeAndNBytesWritten(l, done));
 
-	//css
-	var css_tasks = _.map(css_builds, function(name){
-		var l = mkMyLog(name + '.css');
-		return task(function(done){
-			var start_time = Date.now();
-			buildCSS(zeker, name, false, function(err, n_bytes){
-				done();
-				if(err){
-					l.err(err);
-				}else{
-					var delta = Date.now() - start_time;
-					l.log(n_bytes + ' bytes written (' + (delta / 1000).toFixed(2) + ' seconds)');
-				}
-			});
+					b.bundle().pipe(out);
+				};
+			}),
+
+			/////////////////////////////////////////////
+			//Build CSS
+			_.map(css_builds, function(build_name){
+				var l = mkMyLog(build_name + ".min.css");
+				return function(done){
+					buildCSS(zeker, build_name, true, timeAndNBytesWritten(l, done));
+				};
+			})
+		]), onBuilt);
+	};
+
+	console.log("== Running Tests ==");
+	runTests(mkMyLog("npm test"), function(err){
+		if(err) throw err;
+
+		console.log("== Building JS and CSS ==");
+		buildJSandCSS(function(){
+			if(err) throw err;
+			console.log("DONE!");
 		});
-	});
-
-	chokidar.watch('src/').on('all', function(event, file_path){
-		var type = path.extname(file_path).replace(/[ \.]+/g, '').toLowerCase();
-		if(type === 'js'){
-			testIt();
-		}
-		if(type === 'less' || type === 'css'){
-			_.each(css_tasks, function(fn){fn();});
-		}
 	});
 };

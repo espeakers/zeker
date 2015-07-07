@@ -20,6 +20,7 @@
     "chalk": "^1.1.0",
     "chokidar": "^1.0.3",
     "clean-css": "^3.3.5",
+    "contra": "^1.9.1",
     "cross-spawn": "^1.0.3",
     "envify": "^3.4.0",
     "less": "^2.5.1",
