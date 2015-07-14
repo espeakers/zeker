@@ -19,15 +19,16 @@ var zeker = package_json.zeker;
 
 var args = process.argv.slice(2);
 
-if (_.contains(['watch', 'production'], args[0])) {
-    require('../index')(zeker, args[0], _.rest(args));
-} else if ('build' === args[0]) {
-    require('../build')(zeker, args[1]);
+var build_types = {
+    watch: require('../watch'),
+    production: require('../production')
+};
+
+if (_.has(build_types, args[0])) {
+    build_types[args[0]](zeker, _.rest(args));
 } else {
     console.log('USAGE:');
-    console.log('   zeker watch [build-names...]');
-    console.log('   zeker production [build-names...]');
-    console.log('');
-    console.log('if build-name is not given, then it will build all of them');
+    console.log('   zeker watch');
+    console.log('   zeker production');
     process.exit(1);
 }
