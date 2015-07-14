@@ -1,17 +1,16 @@
 var _ = require('lodash');
-var path = require('path');
 var task = require('./task');
 var mkMyLog = require('./mkMyLog');
 var buildCSS = require('./buildCSS');
 var chokidar = require('chokidar');
-var runTests = require('./runTests');
 var watchify = require('watchify');
 var mkBrowserify = require('./mkBrowserify');
 var mkOutputStream = require('./mkOutputStream');
+var timeAndNBytesWritten = require("./timeAndNBytesWritten");
 
 module.exports = function (zeker) {
 
-    //spawn all the watchify tasks
+    //js
     _.each(zeker.js, function (ignore, build_name) {
         var l = mkMyLog(build_name + ".js");
 
@@ -20,45 +19,26 @@ module.exports = function (zeker) {
 
         var bundle = function () {
             var wb = w.bundle();
-            var out = mkOutputStream(zeker, build_name, 'js', false);
             wb.on('error', function (err) {
-                l.err(String(err));
+                l.err(err);
             });
+            var out = mkOutputStream(zeker, build_name, 'js', false);
             wb.pipe(out);
         };
         w.on('update', bundle);
         bundle();
     });
 
-    //tests
-    var tests_l = mkMyLog('npm test');
-    var testIt = task(function (done) {
-        runTests(tests_l, done);
-    });
-
     //css
-    var css_tasks = _.map(zeker.css, function (ignore, name) {
-        var l = mkMyLog(name + '.css');
+    var css_tasks = _.map(zeker.css, function (ignore, build_name) {
+        var l = mkMyLog(build_name + ".css");
         return task(function (done) {
-            var start_time = Date.now();
-            buildCSS(zeker, name, false, function (err, n_bytes) {
-                done();
-                if (err) {
-                    l.err(err);
-                } else {
-                    var delta = Date.now() - start_time;
-                    l.log(n_bytes + ' bytes written (' + (delta / 1000).toFixed(2) + ' seconds)');
-                }
-            });
+            buildCSS(zeker, build_name, false, timeAndNBytesWritten(l, done));
         });
     });
 
-    chokidar.watch('src/').on('all', function (event, file_path) {
-        var type = path.extname(file_path).replace(/[ \.]+/g, '').toLowerCase();
-        if (type === 'js') {
-            testIt();
-        }
-        if (type === 'less' || type === 'css') {
+    chokidar.watch('src/').on('all', function (ignore, file_path) {
+        if (/\.(less|css)$/.test(file_path)) {
             _.each(css_tasks, function (fn) {
                 fn();
             });
