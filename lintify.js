@@ -18,6 +18,15 @@ var extractDirectiveLines = function (lines) {
     return directive_lines;
 };
 
+function supplant(string, object) {//copy pasted this from jslint
+    return string.replace(/\{([^{}]*)\}/g, function (found, filling) {
+        var replacement = object[filling];
+        return replacement !== undefined
+            ? replacement
+            : found;
+    });
+}
+
 var lintMe = function (js_code) {
     if (/^\/\/IM_NOT_JSLINT_WORTHY_YET\n/.test(js_code)) { //temporarally provide an escape hatch for code that we have not yet migrated to pass jslint
         return [];
@@ -39,13 +48,26 @@ var lintMe = function (js_code) {
         node: true, // b/c we use browserify
         browser: false //only very few files need browser globals, those files should declare that dependancy using the jslint /*global ...*/ at the top of their file
     });
-    return _.map(r.warnings, function (warning) {
-        return _.assign(warning, {
-            //fixing line and col numbers
-            line: warning.line - 2 + 1,
-            column: warning.column - 4 + 1
-        });
-    });
+    return _.filter(_.map(r.warnings, function (warning) {
+        if (warning.code === 'bad_property_a' && /^__/.test(warning.a)) {
+            //ignore these b/c we use dunder for private methods
+            return undefined;
+        }
+        //fixing line and col numbers
+        warning.line = warning.line - 2 + 1;
+        warning.column = warning.column - 4 + 1;
+
+        if (warning.code === 'expected_a_at_b_c') {
+            warning.b = warning.b - 4 + 1;
+            warning.c = warning.c - 4 + 1;
+            warning.message = supplant("Expected '{a}' at column {b}, not column {c}.", warning);
+        } else if(warning.code=== 'expected_a_b_from_c_d') {
+            warning.c = warning.c - 4 + 1;
+            warning.message = supplant("Expected '{a}' to match '{b}' from line {c} and instead saw '{d}'.", warning);
+        }
+
+        return warning;
+    }));
 };
 
 var jslintWarningToHuman = function (file, warning) {
