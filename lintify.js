@@ -4,6 +4,9 @@ var doLint = require("jslint/lib/linter").doLint;
 var through = require("through2");
 
 var lintMe = function(js_code){
+	if(/^\/\/IM_NOT_JSLINT_WORTHY_YET\n/.test(js_code)){//temporarally provide an escape hatch for code that we have not yet migrated to pass jslint
+		return [];
+	}
 
 	//Wrap in a function with 'use strict';
 	//This is what babelify will do, so let's teach jslint that that's what's happening
