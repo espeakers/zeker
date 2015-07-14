@@ -46,12 +46,17 @@ var lintMe = function (js_code) {
     var r = doLint(jslint, js_code, {
         es6: true,
         node: true, // b/c we use browserify
+        "this": true, // this is only allowed for working with React
         browser: false //only very few files need browser globals, those files should declare that dependancy using the jslint /*global ...*/ at the top of their file
     });
     return _.filter(_.map(r.warnings, function (warning) {
         if (warning.code === 'bad_property_a' && /^__/.test(warning.a)) {
             //ignore these b/c we use dunder for private methods
-            return undefined;
+            return;
+        }
+        if (warning.code === 'expected_a_before_b' && warning.a === 'new' && /^[A-Z]/.test(warning.b)) {
+            //ignore these b/c the React convention is to name components uppercase and not use "new"
+            return;
         }
         //fixing line and col numbers
         warning.line = warning.line - 2 + 1;
