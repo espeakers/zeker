@@ -1,8 +1,10 @@
 var _ = require("lodash");
 var λ = require("contra");
+var chalk = require("chalk");
 var mkMyLog = require("./mkMyLog");
 var buildCSS = require("./buildCSS");
 var chokidar = require("chokidar");
+var spawnTask = require('./spawnTask');
 var mkBrowserify = require("./mkBrowserify");
 var mkOutputStream = require("./mkOutputStream");
 var timeAndNBytesWritten = require("./timeAndNBytesWritten");
@@ -19,6 +21,12 @@ var outStreamWrap = function (out, done) {
     });
 };
 
+var die = function () {
+    console.error("===============");
+    console.error("FAILED TO BUILD");
+    process.exit(1);
+};
+
 module.exports = function (zeker) {
 
     λ.concurrent(_.flatten([
@@ -30,11 +38,31 @@ module.exports = function (zeker) {
 
             return function (done) {
                 var b = mkBrowserify(zeker, build_name, true);
-                var out = mkOutputStream(zeker, build_name, "js", true);
 
-                outStreamWrap(out, timeAndNBytesWritten(l, done));
+                var wb = b.bundle();
+                wb.on('error', function (err) {
+                    l.err(err);
+                    done(err);
+                });
 
-                b.bundle().pipe(out);
+                var out;
+                if (build_name === 'tests') {
+                    var p = spawnTask('node', [], l, function (code) {
+                        if (code === 0) {
+                            l.log('tests passed');
+                            done();
+                        } else {
+                            l.err('tests failed (' + code + ')');
+                            done('tests failed (' + code + ')');
+                        }
+                    });
+                    out = p.stdin;
+                } else {
+                    out = mkOutputStream(zeker, build_name, "js", true);
+                    outStreamWrap(out, timeAndNBytesWritten(l, done));
+                }
+
+                wb.pipe(out);
             };
         }),
 
@@ -47,7 +75,13 @@ module.exports = function (zeker) {
             };
         })
     ]), function (err) {
-        if (err) throw err;
+        if (err) {
+            console.error(chalk.red("==============="));
+            console.error(err);
+            console.error(chalk.red("==============="));
+            console.error(chalk.red("FAILED TO BUILD"));
+            process.exit(1);
+        };
         console.log("DONE!");
     });
 };

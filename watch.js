@@ -4,6 +4,7 @@ var mkMyLog = require('./mkMyLog');
 var buildCSS = require('./buildCSS');
 var chokidar = require('chokidar');
 var watchify = require('watchify');
+var spawnTask = require('./spawnTask');
 var mkBrowserify = require('./mkBrowserify');
 var mkOutputStream = require('./mkOutputStream');
 var timeAndNBytesWritten = require("./timeAndNBytesWritten");
@@ -22,7 +23,14 @@ module.exports = function (zeker) {
             wb.on('error', function (err) {
                 l.err(err);
             });
-            var out = mkOutputStream(zeker, build_name, 'js', false);
+
+            var out;
+            if (build_name === 'tests') {
+                var p = spawnTask('node', [], l);
+                out = p.stdin;
+            } else {
+                out = mkOutputStream(zeker, build_name, 'js', false);
+            }
             wb.pipe(out);
         };
         w.on('update', bundle);
