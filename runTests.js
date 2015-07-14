@@ -1,5 +1,5 @@
 var _ = require("lodash");
-var spawn = require("cross-spawn");
+var spawn = require('child_process').spawn;
 
 var toLines = function(str){
 	return _.reject(String(str && str.toString()).split("\n"), function(line){
