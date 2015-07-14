@@ -1,6 +1,6 @@
+var _ = require('lodash');
 var pad = require('pad');
 var chalk = require('chalk');
-var toArray = require('to-array');
 
 var getNextColorFn = (function(){
 	var colors = [
@@ -46,10 +46,10 @@ module.exports = function(my_name){
 
 	return {
 		log: function(){
-			console.log.apply(console, [prefix()].concat(toArray(arguments)));
+			console.log.apply(console, [prefix()].concat(_.toArray(arguments)));
 		},
 		err: function(){
-			console.error.apply(console, [prefix()].concat(toArray(arguments).map(function(a){
+			console.error.apply(console, [prefix()].concat(_.toArray(arguments).map(function(a){
 				return chalk.red(JSON.stringify(a));
 			})));
 		}

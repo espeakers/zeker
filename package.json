@@ -27,7 +27,6 @@
     "lodash": "^3.10.0",
     "pad": "^0.1.0",
     "through2": "^2.0.0",
-    "to-array": "^0.1.4",
     "watchify": "^3.2.3"
   },
   "scripts": {
