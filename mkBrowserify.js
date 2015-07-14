@@ -1,5 +1,6 @@
 var path = require("path");
 var envify = require("envify/custom");
+var lintify = require("./lintify");
 var babelify = require("babelify");
 var browserify = require("browserify");
 var bundleCollapser = require("bundle-collapser/plugin");
@@ -11,6 +12,10 @@ module.exports = function(zeker, build_name, is_prod){
 		packageCache: {},//must set for watchify
 		debug: true//source maps
 	});
+
+	//we must lint the code first before any other transforms are applied
+	b.transform(lintify);
+
 	b.transform(envify({
 		ZEKER_BUILD_NAME: build_name,
 		NODE_ENV: is_prod ? "production" : "development"
@@ -30,7 +35,6 @@ module.exports = function(zeker, build_name, is_prod){
 			"es6.blockScoping",
 			"es6.destructuring",
 			"es6.parameters",
-			"es6.spread",
 			"es6.properties.shorthand"
 		]
 	}));
