@@ -42,6 +42,8 @@ var eslint_config = {
 		"console": true,
 		"setTimeout": true,
 		"setInterval": true,
+		"clearTimeout": true,
+		"clearInterval": true,
 
 		//node (via browserify)
 		"module": true,
@@ -60,6 +62,7 @@ var eslint_config = {
 		"no-eval": 2,
 		"no-void": 2,//babelify will convert undefined into void 0; Other than that void shouldn't be used
 		"no-with": 2,
+		"no-undef": 2,
 		"no-octal": 2,
 		"no-caller": 2,
 		"use-isnan": 2,
@@ -79,8 +82,6 @@ var eslint_config = {
 		"no-script-url": 2,//just use react onClick handlers
 		"no-cond-assign": 2,//if(a = b){... but what they really ment was if(a === b){...
 		"no-new-require": 2,
-
-		"no-undef": 2,
 
 		//style consistency
 		"wrap-iife": [2, "outside"],
