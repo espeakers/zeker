@@ -40,6 +40,8 @@ var eslint_config = {
 	},
 	globals: {
 		"console": true,
+		"setTimeout": true,
+		"setInterval": true,
 
 		//node (via browserify)
 		"module": true,
