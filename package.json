@@ -1,6 +1,6 @@
 {
   "name": "zeker",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "asset builder for eSpeakers front end projects",
   "private": true,
   "main": "index.js",
