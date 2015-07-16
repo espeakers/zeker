@@ -1,99 +1,107 @@
 var _ = require("lodash");
-var jslint = require("jslint").load('latest');
-var doLint = require("jslint/lib/linter").doLint;
+var linter = require("eslint").linter;
 var through = require("through2");
 
-var extractDirectiveLines = function (lines) {
-    var directive_lines = [];
-    var cur_line;
-    if (/^\/\*/.test(lines[0])) {
-        while (true) {
-            cur_line = lines[directive_lines.length];
-            directive_lines.push(cur_line);
-            if (/\*\/$/.test(cur_line)) {
-                break;
-            }
-        }
-    }
-    return directive_lines;
+var eslintWarningToHuman = function (file, warning) {
+	var loc = file.replace(/^.*\/src\//, '') + ':' + warning.line + ',' + warning.column;
+	return 'eslint: ' + warning.message + ' @ ' + loc;
 };
 
-function supplant(string, object) {//copy pasted this from jslint
-    return string.replace(/\{([^{}]*)\}/g, function (found, filling) {
-        var replacement = object[filling];
-        return replacement !== undefined
-            ? replacement
-            : found;
-    });
-}
+var eslint_config = {
+	ecmaFeatures: {
+		//good parts
+		blockBindings: true,
+		destructuring: true,
+		restParams: true,
+		objectLiteralShorthandMethods: true,
+		objectLiteralShorthandProperties: true,
 
-var lintMe = function (js_code) {
-    if (/^\/\/IM_NOT_JSLINT_WORTHY_YET\n/.test(js_code)) { //temporarally provide an escape hatch for code that we have not yet migrated to pass jslint
-        return [];
-    }
+		//gray area :)
+		jsx: true,
 
-    var lines = js_code.split(/\n/);
-    var directive_lines = extractDirectiveLines(lines);
-    lines = lines.slice(directive_lines.length);
+		//bad parts (somewhat according to Douglas Crockford)
+		arrowFunctions: false,//these can be good if there were more rules to specify a jslint style arrow function
+		binaryLiterals: false,
+		classes: false,
+		defaultParams: false,
+		forOf: false,
+		generators: false,
+		modules: false,//these are good if you only use a subset of its features. But we're using CommonJS modules so we don't need to turn these on now
+		objectLiteralComputedProperties: false,
+		objectLiteralDuplicateProperties: false,
+		octalLiterals: false,
+		regexUFlag: false,
+		regexYFlag: false,
+		spread: false,
+		superInFunctions: false,
+		templateStrings: false,//since we're using react and lodash we shouldn't ever need this
+		unicodeCodePointEscapes: false,
+		globalReturn: false
+	},
+	globals: {
+		"console": true,
 
-    //Wrap in a function with 'use strict';
-    //This is what babelify will do, so let's teach jslint that that's what's happening
-    js_code = directive_lines.join("\n") + "\n" + "(function () {\n    'use strict';\n" + _.map(lines, function (line) {
-        return line.length === 0 ? "" : "    " + line;
-    }).join("\n") + "\n}());";
-    js_code = js_code.trim();
+		//node (via browserify)
+		"module": true,
+		"process": true,
+		"require": true,
 
-    var r = doLint(jslint, js_code, {
-        es6: true,
-        node: true, // b/c we use browserify
-        "this": true, // this is only allowed for working with React
-        browser: false //only very few files need browser globals, those files should declare that dependancy using the jslint /*global ...*/ at the top of their file
-    });
-    return _.filter(_.map(r.warnings, function (warning) {
-        if (warning.code === 'bad_property_a' && /^__/.test(warning.a)) {
-            //ignore these b/c we use dunder for private methods
-            return;
-        }
-        if (warning.code === 'expected_a_before_b' && warning.a === 'new' && /^[A-Z]/.test(warning.b)) {
-            //ignore these b/c the React convention is to name components uppercase and not use "new"
-            return;
-        }
-        //fixing line and col numbers
-        warning.line = warning.line - 2 + 1;
-        warning.column = warning.column - 4 + 1;
+		//browsers
+		"window": true,
+		"document": true
+	},
+	rules: {
+		//language hazards
+		"semi": 2,
+		"radix": 2,
+		"strict": [2, "never"],// b/c babelify takes care of this for us
+		"no-eval": 2,
+		"no-void": 2,//babelify will convert undefined into void 0; Other than that void shouldn't be used
+		"no-with": 2,
+		"no-octal": 2,
+		"no-caller": 2,
+		"use-isnan": 2,
+		"no-labels": 2,//too much like goto
+		"no-multi-str": 2,
+		"no-implied-eval": 2,
+		"no-new-wrappers": 2,
+		"no-self-compare": 2,
+		"no-sparse-arrays": 2,
+		"no-native-reassign": 2,
+		"no-use-before-define": 2,
 
-        if (warning.code === 'expected_a_at_b_c') {
-            warning.b = warning.b - 4 + 1;
-            warning.c = warning.c - 4 + 1;
-            warning.message = supplant("Expected '{a}' at column {b}, not column {c}.", warning);
-        } else if(warning.code=== 'expected_a_b_from_c_d') {
-            warning.c = warning.c - 4 + 1;
-            warning.message = supplant("Expected '{a}' to match '{b}' from line {c} and instead saw '{d}'.", warning);
-        }
+		//bad ideas
+		"no-alert": 2,//make a bootstrap modal or use console.log
+		"no-bitwise": 2,//if(a & b){... but what they really ment was if(a && b){...
+		"no-plusplus": 2,//var i = 1, b = i++; is b 2 or 1? how about ++i? Just use i += 1;
+		"no-script-url": 2,//just use react onClick handlers
+		"no-cond-assign": 2,//if(a = b){... but what they really ment was if(a === b){...
+		"no-new-require": 2,
 
-        return warning;
-    }));
+		"no-undef": 2,
+
+		//style consistency
+		"wrap-iife": [2, "outside"],
+		"consistent-this": [2, "self"],
+		"no-trailing-spaces": 2
+	}
 };
 
-var jslintWarningToHuman = function (file, warning) {
-    var loc = file.replace(/^.*\/src\//, '') + ':' + warning.line + ',' + warning.column;
-    return 'jslint: ' + warning.message + ' @ ' + loc;
-};
+module.exports = function(file){
+	if (!/\.js$/i.test(file)){
+		return through();
+	}
+	var js_code = '';
+	return through(function (data, enc, done) {
+		js_code += data;
+		this.push(data);
+		done();
+	}, function(done){
+		var warnings = linter.verify(js_code, eslint_config, file);
 
-module.exports = function (file) {
-    if (!/\.js$/i.test(file)) {
-        return through();
-    }
-    var js_code = '';
-    return through(function (data, enc, done) {
-        js_code += data;
-        this.push(data);
-        done();
-    }, function (done) {
-        var warnings = lintMe(js_code);
-        if (_.size(warnings) === 0) {
-            return done();
-        }
-        done(jslintWarningToHuman(file, _.first(warnings)));
-    });
+		if(_.size(warnings) === 0){
+			return done();
+		}
+		done(eslintWarningToHuman(file, _.first(warnings)));
+	});
 };
