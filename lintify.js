@@ -82,6 +82,10 @@ var eslint_config = {
 		"no-script-url": 2,//just use react onClick handlers
 		"no-cond-assign": 2,//if(a = b){... but what they really ment was if(a === b){...
 		"no-new-require": 2,
+		"no-unused-vars": [2, {
+			vars: "all",
+			args: "none"//unused arguments can provide good documentation about what is available
+		}],
 
 		//style consistency
 		"wrap-iife": [2, "outside"],
