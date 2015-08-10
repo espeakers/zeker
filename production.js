@@ -3,11 +3,11 @@ var λ = require("contra");
 var chalk = require("chalk");
 var mkMyLog = require("./mkMyLog");
 var buildCSS = require("./buildCSS");
-var chokidar = require("chokidar");
 var spawnTask = require('./spawnTask');
 var mkBrowserify = require("./mkBrowserify");
 var mkOutputStream = require("./mkOutputStream");
 var timeAndNBytesWritten = require("./timeAndNBytesWritten");
+var updateHtmlAssetVersion = require("./updateHtmlAssetVersion");
 
 var outStreamWrap = function (out, done) {
     var n_bytes = 0;
@@ -21,15 +21,12 @@ var outStreamWrap = function (out, done) {
     });
 };
 
-var die = function () {
-    console.error("===============");
-    console.error("FAILED TO BUILD");
-    process.exit(1);
-};
-
 module.exports = function (zeker) {
 
     λ.concurrent(_.flatten([
+
+        //so clients know the .js/.css files have been changed
+        λ.curry(updateHtmlAssetVersion, zeker.asset_version_file),
 
         /////////////////////////////////////////////
         //Build JS
@@ -81,7 +78,7 @@ module.exports = function (zeker) {
             console.error(chalk.red("==============="));
             console.error(chalk.red("FAILED TO BUILD"));
             process.exit(1);
-        };
+        }
         console.log("DONE!");
     });
 };
