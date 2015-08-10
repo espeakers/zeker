@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@esp-svn:~/repos/zeker.git"
+    "url": "git@bitbucket.org:espeakers/zeker.git"
   },
   "author": "espeakers",
   "license": "eSpeakers",
