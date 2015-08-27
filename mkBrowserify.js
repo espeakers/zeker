@@ -5,9 +5,9 @@ var babelify = require("babelify");
 var browserify = require("browserify");
 var bundleCollapser = require("bundle-collapser/plugin");
 
-module.exports = function(zeker, build_name, is_prod){
+module.exports = function(build, is_prod){
 	var b = browserify({
-		entries: [path.join(".", zeker.js[build_name])],
+		entries: build.inputs,
 		cache: {},//must set for watchify
 		packageCache: {},//must set for watchify
 		debug: true//source maps
@@ -17,7 +17,7 @@ module.exports = function(zeker, build_name, is_prod){
 	b.transform(lintify);
 
 	b.transform(envify({
-		ZEKER_BUILD_NAME: build_name,
+		ZEKER_BUILD_NAME: build.name,
 		NODE_ENV: is_prod ? "production" : "development"
 	}));
 	b.transform(babelify.configure({

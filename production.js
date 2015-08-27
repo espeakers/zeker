@@ -3,13 +3,11 @@ var λ = require("contra");
 var fs = require('fs');
 var chalk = require("chalk");
 var convert = require("convert-source-map");
-var mkMyLog = require("./mkMyLog");
 var through = require("through2");
 var buildCSS = require("./buildCSS");
 var UglifyJS = require("uglify-js");
 var spawnTask = require('./spawnTask');
 var mkBrowserify = require("./mkBrowserify");
-var getOutFilePath = require('./getOutFilePath');
 var timeAndNBytesWritten = require("./timeAndNBytesWritten");
 var updateHtmlAssetVersion = require("./updateHtmlAssetVersion");
 
@@ -48,54 +46,50 @@ var minifyStream = function(source_map_file){
 	});
 };
 
-module.exports = function (zeker) {
+var build_types = {
+	js: function(build, done){
+		var b = mkBrowserify(build, true);
 
-	λ.concurrent(_.flatten([
+		var wb = b.bundle();
+		wb.on('error', function (err) {
+			build.log.err(err);
+			done(err);
+		});
 
-		//so clients know the .js/.css files have been changed
-		λ.curry(updateHtmlAssetVersion, zeker.asset_version_file),
-
-		/////////////////////////////////////////////
-		//Build JS
-		_.map(zeker.js, function (ignore, build_name) {
-			var l = mkMyLog(build_name + ".min.js");
-
-			return function (done) {
-				var b = mkBrowserify(zeker, build_name, true);
-
-				var wb = b.bundle();
-				wb.on('error', function (err) {
-					l.err(err);
-					done(err);
-				});
-
-				if (build_name === 'tests') {
-					var p = spawnTask('node', [], l, function (code) {
-						if (code === 0) {
-							l.log('tests passed');
-							done();
-						} else {
-							l.err('tests failed (' + code + ')');
-							done('tests failed (' + code + ')');
-						}
-					});
-					wb.pipe(p.stdin);
+		if (build.name === 'tests') {
+			var p = spawnTask('node', [], build.log, function (code) {
+				if (code === 0) {
+					build.log.log('tests passed');
+					done();
 				} else {
-					var out_file_path = getOutFilePath(zeker, build_name, "js", true);
-					var file_out_stream = fs.createWriteStream(out_file_path);
-					outStreamWrap(file_out_stream, timeAndNBytesWritten(l, done));
-
-					wb.pipe(minifyStream(out_file_path + ".map")).pipe(file_out_stream);
+					build.log.err('tests failed (' + code + ')');
+					done('tests failed (' + code + ')');
 				}
-			};
-		}),
+			});
+			wb.pipe(p.stdin);
+		} else {
+			var file_out_stream = fs.createWriteStream(build.output);
+			outStreamWrap(file_out_stream, timeAndNBytesWritten(build.log, done));
 
-		/////////////////////////////////////////////
-		//Build CSS
-		_.map(zeker.css, function (ignore, build_name) {
-			var l = mkMyLog(build_name + ".min.css");
-			return function (done) {
-				buildCSS(zeker, build_name, true, timeAndNBytesWritten(l, done));
+			wb.pipe(minifyStream(build.output + ".map")).pipe(file_out_stream);
+		}
+	},
+	css: function(build, done){
+		buildCSS(build, timeAndNBytesWritten(build.log, done));
+	}
+};
+
+module.exports = function(builds, asset_version_file){
+	λ.concurrent(_.flatten([
+		//so clients know the .js/.css files have been changed
+		λ.curry(updateHtmlAssetVersion, asset_version_file),
+
+		_.map(builds, function(build){
+			if(!_.has(build_types, build.type)){
+				throw new Erorr("unsupported build type: " + build.type);
+			}
+			return function(done){
+				build_types[build.type](build, done);
 			};
 		})
 	]), function (err) {
