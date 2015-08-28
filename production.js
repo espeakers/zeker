@@ -71,7 +71,7 @@ var build_types = {
 			var file_out_stream = fs.createWriteStream(build.output);
 			outStreamWrap(file_out_stream, timeAndNBytesWritten(build.log, done));
 
-			wb.pipe(minifyStream(build.output + ".map")).pipe(file_out_stream);
+			wb.pipe(minifyStream(build.output_map)).pipe(file_out_stream);
 		}
 	},
 	css: function(build, done){
