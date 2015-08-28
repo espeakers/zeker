@@ -4,9 +4,7 @@ var production = require("./production");
 var zekerConfigToBuildDescriptions = require("./zekerConfigToBuildDescriptions");
 
 var zeker_defaults = {
-	builds: {
-		tests: ["tests.js"]
-	},
+	builds: {},
 	src_directory: "src",
 	output_directory: "public",
 	asset_version_file: "public/index.php",
@@ -17,6 +15,9 @@ module.exports = function(zeker_orig, is_prod){
 	is_prod = !!is_prod;
 
 	var zeker = _.assign(zeker_defaults, zeker_orig);
+	if(!_.has(zeker.builds, "tests")){
+		zeker.builds.tests = ["tests.js"];
+	}
 
 	var builds = zekerConfigToBuildDescriptions(zeker, is_prod);
 
