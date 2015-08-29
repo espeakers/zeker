@@ -1,7 +1,7 @@
 {
   "name": "zeker",
   "version": "3.1.1",
-  "description": "opinionated asset bundler for front end projects (browserify + babel + eslint + less)",
+  "description": "opinionated asset bundler for front end projects (npm + babel + uglify-js + eslint + less)",
   "main": "index.js",
   "bin": {
     "zeker": "bin/zeker"

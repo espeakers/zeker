@@ -1,18 +1,19 @@
 # zeker
-opinionated asset bundler for front end projects (browserify + babel + uglify-js + eslint + less)
+opinionated asset bundler for front end projects (npm + babel + uglify-js + eslint + less)
 
-This assumes using [npm](https://www.npmjs.com/) as your package manager, and having a project.json file at the root of your project.
+## Why not just use grunt, gulp, make, or bash?
 
-# Why not just use grunt, gulp, make, or bash?
-When dealing with multiple projects that all need similar configuration keeping build processes constant can be a pain. Zeker just takes in a high level configuration and then handles all the rest for you.
+When dealing with multiple projects that all need similar build steps keeping them consistent can be a major pain. Zeker just takes in a high level configuration and then handles all the rest for you.
 
-It's hard to get front end builds done the "right way". When having multiple build tools and making them work together seamlessly it can be a pain. That's why there are so many grunt-\* packages b/c everyone needs to wrap some other tool to make it work better with their build process. Zeker side steps that by hand combining build tools to make a seamless experience that handles some of the harder cases for you. Such as:
- * Code must pass eslint before it's built
- * Tests should run against the same transform steps as your production code.
- * Your minified assets should have accurate source-maps. Which is hard to do when dealing with browserify + babel + uglify b/c each of them apply transformations to your code that need to be mapped.
- * You may want to build the same code but with different flags set
+It's also hard to get front end builds done the "right way". The challenge is having multiple, separate build tools and making them work together seamlessly. That's why there are so many grunt-\* packages b/c everyone needs to wrap some other tool to make it work better with their build process. Zeker side steps that by hand combining build tools to make a seamless experience that handles some of the harder cases for you. Such as:
+ * code must pass eslint before it's built
+ * test code should run against the same transform steps as your production code, and run on every build
+ * your minified assets should have accurate source-maps. Which is hard to do when dealing with browserify + babel + uglify b/c each of them apply transformations to your code that need to be mapped.
+ * sometimes you want to build the same code but with different feature flags set
 
-# What it does
+If you want npm + babel + uglify-js + eslint + less, then zeker is simply awesome!
+
+## What it does
  * bundles your code using browserify
  * runs eslint against your code, and doesn't compile until you make eslint happy.
  * compiles es6 features to es5 using babel (not all of es6 just some of the better parts of it)
@@ -51,12 +52,15 @@ if("beta" === "beta"){
   // do something else
 }
 ```
-which then get's dead code eliminated to
+which then gets dead code eliminated to
 ```js
   // do something that should only apear in the beta build
 ```
 
-# How to install / configure it
+## How to install / configure it
+
+This assumes using [npm](https://www.npmjs.com/) as your package manager, and having a [project.json](https://docs.npmjs.com/files/package.json) file at the root of your project.
+
 Install it
 ```sh
 $ npm install --save-dev zeker
@@ -98,7 +102,7 @@ Here are the defaults, you can over ride them as needed
  * **asset\_version\_file** this is so you can increment the build id so the browser clients will refresh their cache. This file just needs to have a variable somewhere that says `assets\_version = [0-9]+;`
  * **sourcemap\_directory** where the sourcemaps of the compiled js files should go.
 
-# Node API
+### Node API
 You can also use zeker directly via node
 ```js
 var zeker = require("zeker");
@@ -106,11 +110,11 @@ var zeker = require("zeker");
 zeker(config, is_prod);
 ```
 
-# FYI
+## FYI
 
 This project follows [semantic versioning](http://semver.org/) for releases.
 
-# License
+## License
 
 The MIT License (MIT)
 
