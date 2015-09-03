@@ -43,6 +43,7 @@ module.exports = function(my_name){
 		}
 		return color((new Date()).toString().substr(16, 8), pad(n, max_len), '|');
 	};
+	prefix();//little hack so that max_len get's updated asap
 
 	return {
 		log: function(){
