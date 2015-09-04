@@ -32,8 +32,8 @@ module.exports = function(zeker, is_prod){
 				inputs: _.map(files, function(file_path){
 					return path.join(zeker.src_directory, file_path);
 				}),
-				output: path.join(zeker.output_directory, type, file_name),
-				output_map: path.join(zeker.sourcemap_directory, file_name) + ".map"
+				output: path.resolve(path.join(zeker.output_directory, type, file_name)),
+				output_map: path.resolve(path.join(zeker.sourcemap_directory, file_name)) + ".map"
 			};
 		});
 	}));

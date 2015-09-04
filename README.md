@@ -78,7 +78,7 @@ Add your zeker config to package.json
   },
   "scripts": {
     "start": "zeker watch",
-    "production": "zeker production"
+    "production": "NODE_ENV=production zeker production"
   }
   ...
 ```

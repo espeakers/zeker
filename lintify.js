@@ -34,7 +34,7 @@ var eslint_config = {
 		regexYFlag: false,
 		spread: false,
 		superInFunctions: false,
-		templateStrings: false,//since we're using react and lodash we shouldn't ever need this
+		templateStrings: false,
 		unicodeCodePointEscapes: false,
 		globalReturn: false
 	},
