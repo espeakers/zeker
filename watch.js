@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var fs = require('fs');
+var path = require('path');
 var task = require('./task');
 var buildCSS = require('./buildCSS');
 var chokidar = require('chokidar');
@@ -35,6 +36,18 @@ var jsBuild = function(build){
 	bundle();
 };
 
+var onLessOrCssFileChange = function(folders_to_watch, onChange){
+	var is_ready = false;
+	chokidar.watch(folders_to_watch, {ignored: /[\/\\]\./}).on('all', function(event, file_path){
+		if(is_ready && /\.(less|css)$/.test(file_path)){
+			onChange();
+		}
+	}).on('ready', function(){
+		is_ready = true;
+		onChange();
+	});
+};
+
 module.exports = function(builds){
 
 	var css_tasks = [];
@@ -51,11 +64,18 @@ module.exports = function(builds){
 		}
 	});
 
-	chokidar.watch('src/').on('all', function(ignore, file_path){
-		if(/\.(less|css)$/.test(file_path)){
-			_.each(css_tasks, function(fn){
-				fn();
-			});
+	var css_folders_to_watch = _.unique(_.filter(_.flattenDeep(_.map(builds, function(build){
+		if(build.type !== "css"){
+			return;
 		}
+		return _.map(build.inputs, function(input_file){
+			return path.dirname(path.resolve(input_file)) + "/";
+		});
+	}))));
+
+	onLessOrCssFileChange(css_folders_to_watch, function(){
+		_.each(css_tasks, function(fn){
+			fn();
+		});
 	});
 };
