@@ -36,9 +36,9 @@ The `beta` build will compile beta.js into beta.js or beta.min.js.
 
 Likewise they each emit `main.css`/`main.min.css` and `beta.css`/`beta.min.css` respectively.
 
-Zeker uses [envify](https://www.npmjs.com/package/envify) to allow you to use use environment variables in your builds. It sets `process.env.NODE\_ENV` to "development" in watch mode and "production" in production mode. It also sets `production.env.ZEKER\_BUILD\_NAME` to the name of the build. This way in your code you can do things like this:
+Zeker uses [envify](https://www.npmjs.com/package/envify) to allow you to use use environment variables in your builds. It sets `process.env.NODE\_ENV` to "development" in watch mode and "production" in production mode. It also sets `process.env.ZEKER\_BUILD\_NAME` to the name of the build. This way in your code you can do things like this:
 ```js
-if(production.env.ZEKER_BUILD_NAME === "beta"){
+if(process.env.ZEKER_BUILD_NAME === "beta"){
   // do something that should only apear in the beta build
 }else{
   // do something else
