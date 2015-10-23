@@ -80,18 +80,21 @@ var build_types = {
 };
 
 module.exports = function(builds, asset_version_file){
-	λ.concurrent(_.flatten([
-		//so clients know the .js/.css files have been changed
-		λ.curry(updateHtmlAssetVersion, asset_version_file),
-
-		_.map(builds, function(build){
+	λ.series(_.flatten([
+		_.map(_.sortBy(builds, function(build){
+			//run tests first
+			return (build.name === "tests" ? "a" : "b") + build.name;
+		}), function(build){
 			if(!_.has(build_types, build.type)){
 				throw new Erorr("unsupported build type: " + build.type);
 			}
 			return function(done){
 				build_types[build.type](build, done);
 			};
-		})
+		}),
+
+		//run this last
+		λ.curry(updateHtmlAssetVersion, asset_version_file)
 	]), function (err) {
 		if (err) {
 			console.error(chalk.red("==============="));
