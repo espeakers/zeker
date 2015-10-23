@@ -86,7 +86,7 @@ module.exports = function(builds, asset_version_file){
 			return (build.name === "tests" ? "a" : "b") + build.name;
 		}), function(build){
 			if(!_.has(build_types, build.type)){
-				throw new Erorr("unsupported build type: " + build.type);
+				throw new Error("unsupported build type: " + build.type);
 			}
 			return function(done){
 				build_types[build.type](build, done);

@@ -56,7 +56,7 @@ module.exports = function(builds){
 				buildCSS(build, timeAndNBytesWritten(build.log, done));
 			}));
 		}else{
-			throw new Erorr("unsupported build type: " + build.type);
+			throw new Error("unsupported build type: " + build.type);
 		}
 	});
 
