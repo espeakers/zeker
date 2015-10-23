@@ -1,0 +1,17 @@
+{
+  "name": "zeker-demo",
+  "main": "src/app.js",
+  "private": true,
+  "zeker": {
+    "builds": {
+      "main": [
+        "app.js",
+        "app.less"
+      ]
+    }
+  },
+  "scripts": {
+    "start": "../bin/zeker watch",
+    "production": "NODE_ENV=production ../bin/zeker production"
+  }
+}
