@@ -24,8 +24,9 @@ var mkdirsForOutputPathsIfTheyDontExist = function(builds, callback){
 	λ.map(paths_needed, mkdirp, callback);
 };
 
-module.exports = function(zeker_orig, is_prod){
+module.exports = function(zeker_orig, is_prod, build_names){
 	is_prod = !!is_prod;
+	build_names = _.filter(_.flattenDeep([build_names]), _.isString);
 
 	var zeker = _.assign(zeker_defaults, zeker_orig);
 	if(!_.has(zeker.builds, "tests")){
@@ -33,6 +34,12 @@ module.exports = function(zeker_orig, is_prod){
 	}
 
 	var builds = zekerConfigToBuildDescriptions(zeker, is_prod);
+
+	if(_.size(build_names) > 0){
+		builds = _.filter(builds, function(build){
+			return _.contains(build_names, build.name);
+		});
+	}
 
 	mkdirsForOutputPathsIfTheyDontExist(builds, function(err){
 		if(err) throw err;

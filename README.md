@@ -36,7 +36,7 @@ The `beta` build will compile beta.js into beta.js or beta.min.js.
 
 Likewise they each emit `main.css`/`main.min.css` and `beta.css`/`beta.min.css` respectively.
 
-Zeker uses [envify](https://www.npmjs.com/package/envify) to allow you to use use environment variables in your builds. It sets `process.env.NODE\_ENV` to "development" in watch mode and "production" in production mode. It also sets `process.env.ZEKER\_BUILD\_NAME` to the name of the build. This way in your code you can do things like this:
+Zeker uses [envify](https://www.npmjs.com/package/envify) to allow you to use use environment variables in your builds. It sets `process.env.NODE_ENV` to "development" in watch mode and "production" in production mode. It also sets `process.env.ZEKER_BUILD_NAME` to the name of the build. This way in your code you can do things like this:
 ```js
 if(process.env.ZEKER_BUILD_NAME === "beta"){
   // do something that should only apear in the beta build
@@ -44,7 +44,7 @@ if(process.env.ZEKER_BUILD_NAME === "beta"){
   // do something else
 }
 ```
-Although it may seem verbose to type it out rather than making a `is\_beta` variable, this way your code will be dead code eliminated during the minification step. Because your code gets compiled to this:
+Although it may seem verbose to type it out rather than making a `is_beta` variable, this way your code will be dead code eliminated during the minification step. Because your code gets compiled to this:
 ```js
 if("beta" === "beta"){
   // do something that should only apear in the beta build
@@ -77,6 +77,7 @@ Add your zeker config to package.json
     }
   },
   "scripts": {
+    "test": "zeker test",
     "start": "zeker watch",
     "production": "NODE_ENV=production zeker production"
   }
@@ -99,7 +100,7 @@ Here are the defaults, you can over ride them as needed
 ```
  * **src\_directory** where it should start looking for src files you defined in "builds"
  * **output\_directory** where the compiled assets should go by default "public/css/*" and "public/js/*"
- * **asset\_version\_file** this is so you can increment the build id so the browser clients will refresh their cache. This file just needs to have a variable somewhere that says `assets\_version = [0-9]+;`
+ * **asset\_version\_file** this is so you can increment the build id so the browser clients will refresh their cache. This file just needs to have a variable somewhere that says `assets_version = [0-9]+;`
  * **sourcemap\_directory** where the sourcemaps of the compiled js files should go.
 
 ### Node API
@@ -107,33 +108,15 @@ You can also use zeker directly via node
 ```js
 var zeker = require("zeker");
 ...
-zeker(config, is_prod);
+zeker(config, is_prod, build_names);
 ```
+ * `config` - your zeker config
+ * `is_prod` - true if you want it to run production, false if you want it to watch files (default: false)
+ * `build_names` - list of build names you want to run (default: run all builds)
 
 ## FYI
 
 This project follows [semantic versioning](http://semver.org/) for releases.
 
 ## License
-
-The MIT License (MIT)
-
-Copyright (c) 2015 eSpeakers.com
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+MIT
