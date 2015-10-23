@@ -16,11 +16,7 @@ var jsBuild = function(build){
 	var bundle = function(){
 		var wb = w.bundle();
 		wb.on('error', function(err){
-			if(_.isEqual(["stream"], _.keys(err))){//a hack to get around a browserify dump of the bundle to the log
-				build.log.err("check your require paths");
-			}else{
-				build.log.err(err);
-			}
+			build.log.err(err);
 		});
 
 		var out;

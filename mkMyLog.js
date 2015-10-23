@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var pad = require('pad');
 var chalk = require('chalk');
+var isError = require('is-error');
 
 var getNextColorFn = (function(){
 	var colors = [
@@ -25,6 +26,12 @@ var logs = {};
 var max_len = 0;
 var show_ids = false;
 
+var fixConsoleArguments = function(args){
+	return _.toArray(args).map(function(a){
+		return isError(a) ? a.toString() : a;
+	});
+};
+
 module.exports = function(my_name){
 	if(!logs.hasOwnProperty(my_name)){
 		logs[my_name] = 0;
@@ -47,10 +54,10 @@ module.exports = function(my_name){
 
 	return {
 		log: function(){
-			console.log.apply(console, [prefix()].concat(_.toArray(arguments)));
+			console.log.apply(console, [prefix()].concat(fixConsoleArguments(arguments)));
 		},
 		err: function(){
-			console.error.apply(console, [prefix()].concat(_.toArray(arguments).map(function(a){
+			console.error.apply(console, [prefix()].concat(fixConsoleArguments(arguments).map(function(a){
 				return chalk.red(JSON.stringify(a));
 			})));
 		}
