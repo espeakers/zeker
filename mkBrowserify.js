@@ -21,21 +21,21 @@ module.exports = function(build, is_prod){
 		NODE_ENV: is_prod ? "production" : "development"
 	}));
 	b.transform(babelify.configure({
-		whitelist: [
+		"plugins": [
 			//For the list of whats available and what these do go here:
 			//https://babeljs.io/docs/advanced/transformers/
 
 			//browser compatability/bug avoidance
-			"strict",
-			"es3.propertyLiterals",
-			"es3.propertyLiterals",
-			"spec.undefinedToVoid",
+			"transform-strict-mode",
+			"transform-es3-property-literals",
+			"transform-es3-member-expression-literals",
+			"transform-undefined-to-void",
 
 			//the good parts of es6
-			"es6.blockScoping",
-			"es6.destructuring",
-			"es6.parameters",
-			"es6.properties.shorthand"
+			"transform-es2015-block-scoping",
+			"transform-es2015-destructuring",
+			"transform-es2015-parameters",
+			"transform-es2015-shorthand-properties"
 		]
 	}));
 	if(is_prod){
