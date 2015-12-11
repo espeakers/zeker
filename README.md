@@ -94,7 +94,8 @@ Here are the defaults, you can over ride them as needed
     "src_directory": "src",
     "output_directory": "public",
     "asset_version_file": "public/index.php",
-    "sourcemap_directory": "source-maps"
+    "sourcemap_directory": "source-maps",
+    "eslint_config_overrides": {}
   },
   ...
 ```
@@ -102,6 +103,7 @@ Here are the defaults, you can over ride them as needed
  * **output\_directory** where the compiled assets should go by default "public/css/*" and "public/js/*"
  * **asset\_version\_file** this is so you can increment the build id so the browser clients will refresh their cache. This file just needs to have a variable somewhere that says `assets_version = [0-9]+;`
  * **sourcemap\_directory** where the sourcemaps of the compiled js files should go.
+ * **eslint\_config\_overrides** ability to override the default eslint rules.
 
 ### Node API
 You can also use zeker directly via node

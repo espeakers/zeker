@@ -7,7 +7,7 @@ var eslintWarningToHuman = function (file, warning) {
 	return 'eslint: ' + warning.message + ' @ ' + loc;
 };
 
-var eslint_config = {
+var defaults = {
 	ecmaFeatures: {
 		//good parts
 		blockBindings: true,
@@ -94,21 +94,24 @@ var eslint_config = {
 	}
 };
 
-module.exports = function(file){
-	if (!/\.js$/i.test(file)){
-		return through();
-	}
-	var js_code = '';
-	return through(function (data, enc, done) {
-		js_code += data;
-		this.push(data);
-		done();
-	}, function(done){
-		var warnings = linter.verify(js_code, eslint_config, file);
-
-		if(_.size(warnings) === 0){
-			return done();
+module.exports = function(config_overrides){
+	var eslint_config = _.defaultsDeep(defaults, config_overrides || {});
+	return function(file){
+		if (!/\.js$/i.test(file)){
+			return through();
 		}
-		done(eslintWarningToHuman(file, _.first(warnings)));
-	});
+		var js_code = '';
+		return through(function (data, enc, done) {
+			js_code += data;
+			this.push(data);
+			done();
+		}, function(done){
+			var warnings = linter.verify(js_code, eslint_config, file);
+
+			if(_.size(warnings) === 0){
+				return done();
+			}
+			done(eslintWarningToHuman(file, _.first(warnings)));
+		});
+	};
 };

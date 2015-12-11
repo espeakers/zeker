@@ -14,7 +14,7 @@ module.exports = function(build, is_prod){
 	});
 
 	//we must lint the code first before any other transforms are applied
-	b.transform(lintify);
+	b.transform(lintify(build.eslint_config_overrides));
 
 	b.transform(envify({
 		ZEKER_BUILD_NAME: build.name,
