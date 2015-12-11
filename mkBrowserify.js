@@ -26,16 +26,16 @@ module.exports = function(build, is_prod){
 			//https://babeljs.io/docs/advanced/transformers/
 
 			//browser compatability/bug avoidance
-			"transform-strict-mode",
-			"transform-es3-property-literals",
-			"transform-es3-member-expression-literals",
-			"transform-undefined-to-void",
+			require("babel-plugin-transform-strict-mode"),
+			require("babel-plugin-transform-es3-property-literals"),
+			require("babel-plugin-transform-es3-member-expression-literals"),
+			require("babel-plugin-transform-undefined-to-void"),
 
 			//the good parts of es6
-			"transform-es2015-block-scoping",
-			"transform-es2015-destructuring",
-			"transform-es2015-parameters",
-			"transform-es2015-shorthand-properties"
+			require("babel-plugin-transform-es2015-block-scoping"),
+			require("babel-plugin-transform-es2015-destructuring"),
+			require("babel-plugin-transform-es2015-parameters"),
+			require("babel-plugin-transform-es2015-shorthand-properties")
 		]
 	}));
 	if(is_prod){
