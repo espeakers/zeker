@@ -95,7 +95,7 @@ var defaults = {
 };
 
 module.exports = function(config_overrides){
-	var eslint_config = _.defaultsDeep(defaults, config_overrides || {});
+	var eslint_config = _.defaultsDeep({}, config_overrides || {}, defaults);//yep defaultsDeep mutates arg 1, and first one to define a property wins
 	return function(file){
 		if (!/\.js$/i.test(file)){
 			return through();
