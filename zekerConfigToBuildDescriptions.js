@@ -21,8 +21,8 @@ var groupPathsByType = function(paths){
 };
 
 module.exports = function(zeker, is_prod){
-	return _.flatten(_.map(zeker.builds, function(entry_files, build_name){
-		return _.map(groupPathsByType(entry_files), function(files, type){
+	return _.flatten(_.map(zeker.builds, function(build_config, build_name){
+		return _.map(groupPathsByType(_.isArray(build_config) ? build_config : build_config.files), function(files, type){
 			var file_name = build_name + (is_prod ? '.min' : '') + '.' + type;
 
 			return {
@@ -33,7 +33,13 @@ module.exports = function(zeker, is_prod){
 				inputs: _.map(files, function(file_path){
 					return path.join(zeker.src_directory, file_path);
 				}),
-				output: path.resolve(path.join(zeker.output_directory, type, file_name)),
+				output: path.resolve(path.join(
+									_.has(build_config, "output_directory")
+										? build_config.output_directory
+										: zeker.output_directory,
+									type,
+									file_name
+								)),
 				output_map: path.resolve(path.join(zeker.sourcemap_directory, file_name)) + ".map"
 			};
 		});
