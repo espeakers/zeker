@@ -7,36 +7,11 @@ var eslintWarningToHuman = function (file, warning) {
 	return 'eslint: ' + warning.message + ' @ ' + loc;
 };
 
+linter.defineRule("no-class", require("eslint-plugin-no-class/lib/rules/no-class"));
+
 var defaults = {
-	ecmaFeatures: {
-		//good parts
-		blockBindings: true,
-		destructuring: true,
-		restParams: true,
-		objectLiteralShorthandMethods: true,
-		objectLiteralShorthandProperties: true,
-
-		//gray area :)
-		jsx: true,
-
-		//bad parts (somewhat according to Douglas Crockford)
-		arrowFunctions: false,//these can be good if there were more rules to specify a jslint style arrow function
-		binaryLiterals: false,
-		classes: false,
-		defaultParams: false,
-		forOf: false,
-		generators: false,
-		modules: false,//these are good if you only use a subset of its features. But we're using CommonJS modules so we don't need to turn these on now
-		objectLiteralComputedProperties: false,
-		objectLiteralDuplicateProperties: false,
-		octalLiterals: false,
-		regexUFlag: false,
-		regexYFlag: false,
-		spread: false,
-		superInFunctions: false,
-		templateStrings: false,
-		unicodeCodePointEscapes: false,
-		globalReturn: false
+	parserOptions: {
+		ecmaVersion: 6
 	},
 	globals: {
 		"console": true,
@@ -87,6 +62,8 @@ var defaults = {
 			args: "none"//unused arguments can provide good documentation about what is available
 		}],
 
+		"no-class": 2,
+
 		//style consistency
 		"wrap-iife": [2, "outside"],
 		"consistent-this": [2, "self"],
@@ -101,12 +78,14 @@ module.exports = function(config_overrides){
 			return through();
 		}
 		var js_code = '';
-		return through(function (data, enc, done) {
+		return through(function(data, enc, done){
 			js_code += data;
 			this.push(data);
 			done();
 		}, function(done){
-			var warnings = linter.verify(js_code, eslint_config, file);
+			var warnings = linter.verify(js_code, eslint_config, {
+				filename: file
+			});
 
 			if(_.size(warnings) === 0){
 				return done();
