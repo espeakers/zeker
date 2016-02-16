@@ -21,21 +21,18 @@ module.exports = function(build, is_prod){
 		NODE_ENV: is_prod ? "production" : "development"
 	}));
 	b.transform(babelify.configure({
+		//For info on what these do and what's available go here:
+		//http://babeljs.io
+		"presets": [
+			require("babel-preset-es2015"),
+			require("babel-preset-react")
+		],
 		"plugins": [
-			//For the list of whats available and what these do go here:
-			//https://babeljs.io/docs/advanced/transformers/
-
 			//browser compatability/bug avoidance
 			require("babel-plugin-transform-strict-mode"),
 			require("babel-plugin-transform-es3-property-literals"),
 			require("babel-plugin-transform-es3-member-expression-literals"),
-			require("babel-plugin-transform-undefined-to-void"),
-
-			//the good parts of es6
-			require("babel-plugin-transform-es2015-block-scoping"),
-			require("babel-plugin-transform-es2015-destructuring"),
-			require("babel-plugin-transform-es2015-parameters"),
-			require("babel-plugin-transform-es2015-shorthand-properties")
+			require("babel-plugin-transform-undefined-to-void")
 		]
 	}));
 	if(is_prod){
