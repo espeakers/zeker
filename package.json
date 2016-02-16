@@ -1,6 +1,6 @@
 {
   "name": "zeker",
-  "version": "3.5.0",
+  "version": "4.0.0",
   "description": "opinionated asset bundler for front end projects (npm + babel + uglify-js + eslint + less)",
   "main": "index.js",
   "bin": {
