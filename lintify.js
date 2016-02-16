@@ -62,6 +62,7 @@ var defaults = {
 			args: "none"//unused arguments can provide good documentation about what is available
 		}],
 
+		// https://medium.com/javascript-scene/inside-the-dev-team-death-spiral-6a7ea255467b
 		"no-class": 2,
 
 		//style consistency
