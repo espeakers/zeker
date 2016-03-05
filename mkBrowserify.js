@@ -18,6 +18,7 @@ module.exports = function(build, is_prod){
 
 	b.transform(envify({
 		ZEKER_BUILD_NAME: build.name,
+		PACKAGE_JSON_VERSION: build.package_json_version,
 		NODE_ENV: is_prod ? "production" : "development"
 	}));
 	b.transform(babelify.configure({

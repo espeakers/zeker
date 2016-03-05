@@ -57,6 +57,8 @@ which then gets dead code eliminated to
   // do something that should only apear in the beta build
 ```
 
+`process.env.PACKAGE_JSON_VERSION` will give you the version string from your project's package.json.
+
 ## How to install / configure it
 
 This assumes using [npm](https://www.npmjs.com/) as your package manager, and having a [project.json](https://docs.npmjs.com/files/package.json) file at the root of your project.
