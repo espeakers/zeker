@@ -17,6 +17,9 @@ if(!_.has(package_json, 'zeker')){
 }
 var zeker = package_json.zeker;
 
+//for envify
+zeker.package_json_version = package_json.version;
+
 var args = process.argv.slice(2);
 
 if(args[0] === "watch" || args[0] === "production"){
