@@ -1,6 +1,6 @@
 {
   "name": "zeker",
-  "version": "4.1.0",
+  "version": "4.2.0",
   "description": "opinionated asset bundler for front end projects (npm + babel + uglify-js + eslint + less)",
   "main": "index.js",
   "bin": {
@@ -15,6 +15,7 @@
   "dependencies": {
     "babel-plugin-transform-es3-member-expression-literals": "^6.5.0",
     "babel-plugin-transform-es3-property-literals": "^6.5.0",
+    "babel-plugin-transform-react-jsx": "^6.8.0",
     "babel-plugin-transform-strict-mode": "^6.5.2",
     "babel-plugin-transform-undefined-to-void": "^6.5.0",
     "babel-preset-es2015": "^6.5.0",
@@ -30,6 +31,7 @@
     "envify": "^3.4.0",
     "eslint": "^2.1.0",
     "eslint-plugin-no-class": "^0.1.0",
+    "eslint-plugin-react": "^5.2.2",
     "is-error": "^2.2.0",
     "less": "^2.5.1",
     "lodash": "^3.10.1",

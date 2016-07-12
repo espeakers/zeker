@@ -11,8 +11,14 @@ linter.defineRule("no-class", require("eslint-plugin-no-class/lib/rules/no-class
 
 var defaults = {
 	parserOptions: {
-		ecmaVersion: 6
+		ecmaVersion: 6,
+		"ecmaFeatures": {
+	    	"jsx": true
+	  	}
 	},
+	"plugins": [
+		"react"
+	],
 	globals: {
 		"console": true,
 		"setTimeout": true,
