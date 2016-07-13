@@ -33,7 +33,8 @@ module.exports = function(build, is_prod){
 			require("babel-plugin-transform-strict-mode"),
 			require("babel-plugin-transform-es3-property-literals"),
 			require("babel-plugin-transform-es3-member-expression-literals"),
-			require("babel-plugin-transform-undefined-to-void")
+			require("babel-plugin-transform-undefined-to-void"),
+			require("babel-plugin-transform-react-jsx")
 		]
 	}));
 	if(is_prod){
