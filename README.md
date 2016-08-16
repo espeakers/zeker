@@ -97,7 +97,8 @@ Here are the defaults, you can over ride them as needed
     "output_directory": "public",
     "asset_version_file": "public/index.php",
     "sourcemap_directory": "source-maps",
-    "eslint_config_overrides": {}
+    "eslint_config_overrides": {},
+    "babel_config_overrides": {}
   },
   ...
 ```
