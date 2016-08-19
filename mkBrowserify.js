@@ -4,6 +4,7 @@ var lintify = require("./lintify");
 var babelify = require("babelify");
 var browserify = require("browserify");
 var bundleCollapser = require("bundle-collapser/plugin");
+var _ = require('lodash');
 
 module.exports = function(build, is_prod){
 	var b = browserify({
@@ -21,7 +22,7 @@ module.exports = function(build, is_prod){
 		PACKAGE_JSON_VERSION: build.package_json_version,
 		NODE_ENV: is_prod ? "production" : "development"
 	}));
-	b.transform(babelify.configure({
+	b.transform(babelify.configure(_.assign({
 		//For info on what these do and what's available go here:
 		//http://babeljs.io
 		"presets": [
@@ -36,7 +37,7 @@ module.exports = function(build, is_prod){
 			require("babel-plugin-transform-undefined-to-void"),
 			require("babel-plugin-transform-react-jsx")
 		]
-	}));
+	}, build.babel_config_overrides)));
 	if(is_prod){
 		b.plugin(bundleCollapser);
 	}

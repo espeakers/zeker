@@ -31,6 +31,7 @@ module.exports = function(zeker, is_prod){
 				type: type,
 				package_json_version: zeker.package_json_version,
 				eslint_config_overrides: zeker.eslint_config_overrides,
+				babel_config_overrides: zeker.babel_config_overrides,
 				inputs: _.map(files, function(file_path){
 					return path.join(zeker.src_directory, file_path);
 				}),
