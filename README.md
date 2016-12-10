@@ -1,3 +1,14 @@
+# zeker - DEPRECATED in favor of Webpack
+
+Zeker was made in effort to solve many of the pains with using browserify. [Webpack](https://webpack.js.org/) addresses all of these and more such as file dependencies and hot-module replacement. Learning how to configure webpack is definitely worth the investment. It will pay you back with a single build tool that is holistic, reliable, and very fast.
+
+Here are some webpack loaders you might want when migrating from zeker:
+ * [less-loader](https://www.npmjs.com/package/less-loader)
+ * [babel-loader](https://www.npmjs.com/package/babel-loader)
+ * [eslint-loader](https://www.npmjs.com/package/eslint-loader)
+
+# DEPRECATED in favor of Webpack
+
 # zeker
 opinionated asset bundler for front end projects (npm + babel + uglify-js + eslint + less)
 
